@@ -61,3 +61,11 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+
+Gizmos/Library/Artifacts/
+
+Gizmos/Library/PackageCache/
+
+Gizmos/Library/ShaderCache/
+
+Gizmos/Temp/
