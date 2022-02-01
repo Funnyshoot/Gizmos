@@ -18,7 +18,7 @@ MonoBehaviour:
   - Name: End Level
     Position: {x: -15, y: 2, z: -1}
   - Name: First Fight
-    Position: {x: -6.425, y: 1, z: -0.3}
+    Position: {x: 25, y: 1, z: -0.3}
   - Name: PNJ to help
     Position: {x: -10.06, y: 2, z: -0.53}
   - Name: Boss Arena
