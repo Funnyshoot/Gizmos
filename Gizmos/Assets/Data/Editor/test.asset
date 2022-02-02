@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: test
   m_EditorClassIdentifier: 
   _gizmos:
-  - Name: A
-    Position: {x: 1, y: 2, z: 3}
+  - Name: SE
+    Position: {x: 23, y: 2, z: 3}
   - Name: B
     Position: {x: 4, y: 5, z: 6}
   - Name: C
-    Position: {x: 7, y: 8, z: 9}
+    Position: {x: 12, y: 8, z: 9}

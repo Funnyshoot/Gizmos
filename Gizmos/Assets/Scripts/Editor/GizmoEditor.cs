@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 using technical.test.editor;
 
@@ -10,6 +11,7 @@ public class GizmoEditor : EditorWindow
     Gizmo[] savedGizmos; // the last position before update.
     Gizmo[] dataGizmos; //the data we load
     Gizmo[] storageGizmos; // where we write
+    GameObject[] SpheresGizmos;
     int editing = -1;
 
     #region System
@@ -19,6 +21,7 @@ public class GizmoEditor : EditorWindow
     {
         GetWindow<GizmoEditor>("Gizmos Editor : ");
     }
+
     private void OnEnable()
     {
         //dataGizmos = AssetDatabase.LoadAssetAtPath<SceneGizmoAsset>("Assets/Data/Editor/Scene Gizmo Asset.asset")._gizmos;
@@ -27,18 +30,26 @@ public class GizmoEditor : EditorWindow
         dataGizmos = assetLoaded._gizmos;
         storageGizmos = new Gizmo[dataGizmos.Length];
         savedGizmos = new Gizmo[dataGizmos.Length];
+        SpheresGizmos = new GameObject[dataGizmos.Length];
         dataGizmos.CopyTo(storageGizmos, 0);
+        DrawSphereGizmos();
+        //RenderPipelineManager.endFrameRendering += EndFrameRendering;
     }
 
-
+    private void OnDisable()
+    {
+        StopEditingGizmo();
+        EraseSphereGizmos();
+        //RenderPipelineManager.endFrameRendering -= EndFrameRendering;
+    }
 
     private void OnGUI()
     {
         GUILayout.Label("Gizmos Editor", EditorStyles.boldLabel);
         for (int i = 0; i< dataGizmos.Length; ++i)
         {
-            GUILayout.BeginHorizontal();
             storageGizmos[i].Name = EditorGUILayout.TextField("Gizmo: " + dataGizmos[i].Name, dataGizmos[i].Name);
+            storageGizmos[i].Position = EditorGUILayout.Vector3Field("Position", dataGizmos[i].Position);
             if (GUILayout.Button("edit"))
             {
                 if (editing == i) StopEditingGizmo();
@@ -48,9 +59,9 @@ public class GizmoEditor : EditorWindow
                     StartEditingGizmo(i);
                 }
             }
-            storageGizmos[i].Position = EditorGUILayout.Vector3Field("Position", dataGizmos[i].Position);
+            //ChangeLabel(EditorGUILayout.Toggle("View in Game", false)); would need listener?
+
             GUILayout.Space(50);
-            GUILayout.EndHorizontal();
         }
     }
 
@@ -62,9 +73,55 @@ public class GizmoEditor : EditorWindow
     #endregion
 
     #region call
+
+    void EndFrameRendering(ScriptableRenderContext ctxt, Camera[] cameras) => DrawSphereGizmos();
+
     #endregion
 
     #region function
+
+    void DrawSphereGizmos()
+    {
+        for (int i = 0; i < dataGizmos.Length; ++i)
+        {
+            SpheresGizmos[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            SpheresGizmos[i].tag = "EditorOnly";
+            UpdateSphereGizmos(i);
+        }
+    }
+
+    void EraseSphereGizmos()
+    {
+        for (int i = 0; i < dataGizmos.Length; ++i)
+        {
+            DestroyImmediate(SpheresGizmos[i]);
+        }
+    }
+
+    void UpdateSphereGizmos()
+    {
+        for (int i = 0; i < dataGizmos.Length; ++i)
+        {
+            SpheresGizmos[i].transform.position = storageGizmos[i].Position;
+            SpheresGizmos[i].name = storageGizmos[i].Name;
+            Debug.Log(SpheresGizmos[i].name);
+        }
+    }
+    void UpdateSphereGizmos(int i)
+    {
+        SpheresGizmos[i].transform.position = storageGizmos[i].Position;
+        SpheresGizmos[i].name = storageGizmos[i].Name;
+        Debug.Log(SpheresGizmos[i].name);
+    }
+
+    void ChangeLabel(bool change)
+    {
+        for (int i = 0; i < dataGizmos.Length; ++i)
+        {
+            if (change) SpheresGizmos[i].tag = "Untagged";
+            else SpheresGizmos[i].tag = "EditorOnly";
+        }
+    }
 
     private void StopEditingGizmo()
     {
@@ -81,8 +138,8 @@ public class GizmoEditor : EditorWindow
     }   
     private void EditingGizmo(int gizmoID)
     {
-        Debug.Log("editing : " + editing);
         SetGizmo(gizmoID, storageGizmos[gizmoID]);
+        UpdateSphereGizmos(gizmoID);
     }
 
     public void ResetGizmo(int gizmoID)
@@ -92,7 +149,6 @@ public class GizmoEditor : EditorWindow
 
     private void SetGizmo(int gizmoID, Gizmo g)
     {
-        Debug.Log("Set");
         dataGizmos[gizmoID] = g;
         assetLoaded._gizmos=dataGizmos;
 
