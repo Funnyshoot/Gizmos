@@ -33,14 +33,12 @@ public class GizmoEditor : EditorWindow
         SpheresGizmos = new GameObject[dataGizmos.Length];
         dataGizmos.CopyTo(storageGizmos, 0);
         DrawSphereGizmos();
-        //RenderPipelineManager.endFrameRendering += EndFrameRendering;
     }
 
     private void OnDisable()
     {
         StopEditingGizmo();
         EraseSphereGizmos();
-        //RenderPipelineManager.endFrameRendering -= EndFrameRendering;
     }
 
     private void OnGUI()
@@ -80,7 +78,7 @@ public class GizmoEditor : EditorWindow
 
     private void Update()
     {
-        if (!(editing < 0)) EditingGizmo(editing);
+        if (!(editing < 0)) EditingGizmo(editing);     
     }
 
     #endregion
@@ -96,6 +94,7 @@ public class GizmoEditor : EditorWindow
         {
             SpheresGizmos[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             SpheresGizmos[i].tag = "EditorOnly";
+            SpheresGizmos[i].GetComponent<SphereCollider>().enabled = false;
             UpdateSphereGizmos(i);
         }
     }
