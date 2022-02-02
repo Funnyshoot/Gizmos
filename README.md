@@ -7,7 +7,7 @@ Task at hand :
 	-display Name X/Y/Z 					DONE
 	-for each Gizmos in SceneGizmoAsset			DONE
 	-all 4 variable editable by selected gizmo		DONE
-		-revertable to post edit			INC
+		-revertable to post edit			DONE
 		-auto saved change				DONE
 -scene view
 	-show only gizmos 
